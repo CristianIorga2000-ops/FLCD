@@ -50,8 +50,6 @@ public class LexicalAnalyzer {
 
         while (sc.hasNextLine()) {
             String redLine = sc.nextLine();
-            System.out.println("READ: " + redLine + "\n");
-
             for (String token : redLine.split(" ")) {
                 if (tokens.contains(token)) {
                     pif.add(new Truple<>(token, tokens.size(), -1));
