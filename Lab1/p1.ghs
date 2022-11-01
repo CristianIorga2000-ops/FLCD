@@ -1,13 +1,12 @@
-int a;
-a = 1;
+int a ;
+a = 1 ;
 
-int a;
-b = 2;
+int b ;
+b = 2 ;
 
-int c;
-c = 3;
+int c ;
+c = 3 ;
 
-if  a > b && a > c then print a ;
-if b > a && b > c then print b ;
-if a > b && a > c then print c ;
-
+if  ( a > b && a > c ) print a ;
+if ( b > a && b > c ) print b ;
+if ( a > b && a > c ) print c ;

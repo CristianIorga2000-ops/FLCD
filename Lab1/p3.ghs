@@ -1,8 +1,8 @@
 -- We assume input is given as a list of n numbers 
-list = [1, 2, 3]
+list = [ 1 , 2 , 3 ] ;
 sum = 0
 
-for (n : list) 
+for ( n : list ) 
     sum = sum + n 
 
 print sum 

@@ -9,6 +9,8 @@ Tokens:
 ;
 space
 newline
+\n
+\t
 .
 ,
 '
@@ -38,3 +40,9 @@ for
 while
 input
 print
+int
+char
+&&
+||
+--
+ 
