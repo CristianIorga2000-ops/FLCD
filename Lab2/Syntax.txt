@@ -1,0 +1,36 @@
+Syntactical rules: 
+
+<program> ::= <statement_list>
+<statement_list> ::= <statement> | <statement><statement_list>
+<statement> ::= <simple_statement> | <compound_statement>
+<simple_statement> ::= <assignment_statement> | <io_statement> | <declaration_statement>
+<compound_statement> ::= <if_statement> | <while_statement> | <for_statement>
+
+<assignment_statement> ::= <identifier> = <expression>
+
+<type> ::= <simple_type> | <array_type>
+<array_type> ::= <simple_type> arr
+<simple_type> ::= number | string 
+<declaration_statement> ::= <var_declaration> | <arr_declaration>
+<var_declaration> ::= <simple_type><identifier> | <simple_type><identifier> = <expression>
+<array_declaration> ::= <array_type>[<nr>]<identifier> | <array_type>[<nr>]<identifier> = <int>
+
+<expression> ::= <number_expression> | <string_expression>
+<number_expression> ::= <number_expression> + <term> | <number_expression> - <term> | <term>
+<term> ::= <term> * <factor> | <term> // <factor> | <factor>
+<factor> ::= (<number_expression>) | <identifier> | <number_const> | <index_identifier>
+<string_expression> ::= <string_const> | <identifier> | <index_identifier> |
+                      <string_expression> + <string_expression>
+
+<index_identifier> ::= <identifier>[<nr>] | <identifier>[<zero_digit>]
+<io_statement> ::= <function_name> (<identifier>)
+<function_name> ::= print | input
+
+
+<if_statement> ::= if <condition> { <statement_list> }; | if <condition> { <statement_list> }; else { <statement_list> };
+
+<condition> ::= (<expression><relation><expression>)
+<relation> ::= == | < | <= | > | >= | != 
+<while_statement> ::= while <condition> { <statement_list> };
+<for_statement> ::= for <for_header> : <statement_list>
+<for_header> ::= (<assignment_statement> , <condition> , <assignment_statement>)

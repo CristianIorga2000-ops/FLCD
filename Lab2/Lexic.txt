@@ -1,0 +1,39 @@
+Alphabet:
+
+a. All uppercase letters of the English alphabet [A-Z]
+b. All lowercase letters of the English alphabet [a-z]
+c. Underline character '_'
+d. Decimal digits [0-9]
+
+Lexic:
+
+1. Special symbols, representing:
+	a. operators: + - * / = == < <= >= % // != and or
+	b. separators: {} [] () ' " . , : ; space newline
+	c. reserved words: if else for while const number string arr input print 
+
+2. Identifiers - a sequence of letters, digits and underline characters, such that the first character is a letter:
+
+<identifier> ::= <letter>|<letter><letter_digit_seq>
+<letter_digit_seq> ::= <letter_digit_symbol>|<letter_digit_symbol><letter_digit_seq>
+<letter_digit_symbol> ::= <letter>|<digit>|_<letter>
+<letter> ::= a|b|...|z|A|B|...|Z
+<digit> ::= 0|<nzdigit>
+<nzdigit> ::= 1|2|...|9
+
+3. Constants: 
+	a. Integer - rule:
+		<int> ::= <zero_digit>|<nonzeronr>
+		<nonzeronr> ::=  <nr>|-<nr>|+<nr>
+		<nr> ::= <nzdigit>|<nr><digit>
+		<zero_digit> ::= 0
+	c. Character -rule:
+		<char> ::= '<letter>'|'<digit>'
+	d. String - rule:
+		<string> ::= '''<char>'''|'''<char>'''<string>
+	e. Constant - rule:
+		<const> ::= <number_const> | <string_const>
+		<number_const> ::= <int> 
+		<string_const> ::= <char> | <string>
+	f. Number - rule:
+		<number> ::= <int>

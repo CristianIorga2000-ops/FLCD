@@ -1,0 +1,8 @@
+a = 10 
+isPrime = 1
+
+for (i = 0; i < a; i ++)
+  if (a % i == 0) isPrime = 0
+
+if isPrime then print "IsPrime"
+else print "Notprime"

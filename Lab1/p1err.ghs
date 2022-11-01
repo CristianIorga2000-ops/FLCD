@@ -1,0 +1,4 @@
+2ab = "abc" -- Var name cant start with number
+ab15 = "abc"; -- ";" is illegal symbol
+
+print (2ab + ab15 + "abc")
