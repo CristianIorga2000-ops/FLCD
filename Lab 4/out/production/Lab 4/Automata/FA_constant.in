@@ -1,0 +1,16 @@
+ALPHABET
+nonzerodigits + - 0
+STATES
+Start Signed End EndZero
+TRANSITIONS
+Start + Signed
+Start - Signed
+Start nonzerodigits End
+Start 0 EndZero
+Signed nonzerodigits End
+End digits End
+INITIAL
+Start
+END
+End
+EndZero

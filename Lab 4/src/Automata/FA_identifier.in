@@ -1,0 +1,14 @@
+ALPHABET
+letters digits _
+STATES
+Start Underscore End
+TRANSITIONS
+Start letters End
+Start _ Underscore
+Underscore letters End
+End letters End
+End digits End
+INITIAL
+Start
+END
+End
