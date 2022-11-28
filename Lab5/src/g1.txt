@@ -1,0 +1,6 @@
+S A B
+x y
+S
+S -> A | A x | B y
+A -> x
+B -> x y A | B y
