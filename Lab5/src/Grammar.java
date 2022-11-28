@@ -22,9 +22,16 @@ public class Grammar {
 
         List<Production> productions = new ArrayList<>();
         for (String production : productionsRows){
+            // The following implementation does not detect \\ and \| so we do that tractorist style
             List<String> splitStr = Arrays.asList(production.split("->"));
             String nonterminal = splitStr.get(0).trim().strip();
             List<String> ends = List.of(splitStr.get(1).split("\\|"));
+            if(production.contains("\\\\|")) {
+                productions.add(new Production(nonterminal, "|"));
+            }
+            if(production.contains("\\\\")) {
+                productions.add(new Production(nonterminal, "\\"));
+            }
             for(String end : ends){
                 productions.add(new Production(nonterminal, end.replace('\\',' ').trim().strip()));
             }
