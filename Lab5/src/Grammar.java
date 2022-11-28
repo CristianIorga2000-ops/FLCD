@@ -26,7 +26,7 @@ public class Grammar {
             String nonterminal = splitStr.get(0).trim().strip();
             List<String> ends = List.of(splitStr.get(1).split("\\|"));
             for(String end : ends){
-                productions.add(new Production(nonterminal, end));
+                productions.add(new Production(nonterminal, end.replace('\\',' ').trim().strip()));
             }
         }
 
