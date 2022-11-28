@@ -11,12 +11,16 @@ public class Main {
 
         System.out.println("Choose file");
         System.out.println("1. g1.txt");
+        System.out.println("2. g2.txt");
 
         String command = scanner.nextLine();
 
         switch (command) {
             case "1":
                 parseGrammar(scanner, "g1.txt");
+                break;
+            case "2":
+                parseGrammar(scanner, "g2.txt");
                 break;
             default:
                 System.out.println("Wrong choice bozo!");

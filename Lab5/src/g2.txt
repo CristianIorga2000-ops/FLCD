@@ -1,0 +1,53 @@
+Program Character Letter NonZeroDigit Digit Identifier LetterOrDigitSequence IntegerConstant DigitSequence CharConstant StringConstant CharacterSequence BooleanConstant Constant CompoundStatement Statement ConstDeclaration VarDeclaration StructDeclaration AssignmentStatement Conditional Loop ReadStatement PrintStatement UserDefinedType Identifier Type ArraySize ArraySpecifcation Assignment ArithmeticExpression RelationalExpression StructConstruction StructField InitSequence DotIdentifierSequence Term TermSequence TermSign Factor FactorSequence FactorSign RelationalSign ConstInitialization ConstInitializationSequence FirstConditionalBranch ConditionalWithoutElse ElifSequence Loop ReadStatement Printable PrintStatement StructFieldSequence StructFieldAssignmentSequence
+\s ! “ # $ % & ‘ ( ) * + , - . / 0 1 2 3 4 5 6 7 8 9 : ; < = > ? @ A B C D E F G H I J K L M N O P Q R S T U V W X Y Z [ \ ] ^ _ ` a b c d e f g h i j k l m n o p q r s t u v w x y z { | } ~
+Program
+Character -> \s | ! | " | # | $ | % | & | ' | ( | ) | * | + | , | - | . | / | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | | : | ; | < | = | > | ? | @ | A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z | [ | \\ | ] | ^ | _ | ` | a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z | { | \| | } | ~
+Letter -> a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z | A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z
+NonZeroDigit -> 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+Digit -> 0 | NonZeroDigit
+Identifier -> Letter | Letter LetterOrDigitSequence
+LetterOrDigitSequence -> Letter LetterOrDigitSequence | Digit LetterOrDigitSequence
+IntegerConstant -> + DigitSequence | - DigitSequence
+DigitSequene -> Digit | Digit DigitSequence
+CharConstant -> ' Character '
+StringConstant -> " " | " CharacterSequence "
+CharacterSequence -> Character | Character CharacterSequence
+BooleanConstant -> t r u e | f a l s e
+Constant -> IntegerConstant | StringConstant | BooleanConstant
+Program -> CompoundStatement
+CompoundStatement -> Statement | Statement CompoundStatement
+Statement -> ConstDeclaration | VarDeclaration | StructDeclaration | AssignmentStatement | Conditional | Loop | ReadStatement | PrintStatement
+UserDefinedType -> Identifier
+Type -> i n t | c h a r | b o o l | UserDefinedType | a r r a y [ Type ]
+ArraySize -> NonZeroDigit | NonZeroDigit DigitSequence
+ArraySpecification -> Type [ ArraySize ]
+Assignment -> = ArithmeticExpression | = CharConstant | = StringConstant | = RelationalExpression | = ArraySpecifcation | = StructConstruction | = StructField
+VarDeclaration -> v a r \s Type \s InitSequence
+InitSequence -> Identifier | Identifier Assignment | Identifier , InitSequence | Identifier Assignment , InitSequence
+StructField -> Identifier . DotIdentifierSequence
+DotIdentifierSequence -> Identifier | Identifier . DotIdentifierSequence
+AssignmentStatement -> l e t \s Identifier Assignment | l e t \s Identifier Assignment
+ArithmeticExpression -> Term | Term TermSequence
+TermSign -> + | -
+TermSequence -> TermSign Term | TermSign Term TermSequence
+Term -> Factor | Factor FactorSequence
+FactorSign -> * | /
+FactorSequence -> FactorSign Factor | FactorSign Factor FactorSequence
+Factor -> ( ArithmeticExpression ) | Identifier | IntegerConstant
+RelationalSign -> < | < = | = = | ! = | > = | >
+RelationalExpression -> ArithmeticExpression RelationalSign ArithmeticExpression | BooleanConstant
+ConstInitialization -> Identifier = Constant
+ConstDeclaration -> c o n s t ConstInitialization | c o n s t ConstInitialization ConstInitializationSequence
+ConstInitializationSequence -> , ConstInitialization | , ConstInitialization | ConstInitializationSequence
+FirstConditionalBranch -> i f \s RelationalExpression \s t h e n \s CompoundStatement
+ConditionalWithoutElse ->  FirstConditionalBranch e n d | FirstConditionalBranch \s ElifSequence \s e n d
+ElifSequence -> e l i f \s RelationalExpression \s t h e n \s CompoundStatement | e l i f \s RelationalExpression \s t h e n \s CompoundStatement ElifSequence
+Conditional -> ConditionalWithoutElse | ConditionalWithoutElse \s e l s e \s CompoundStatement \s e n d
+Loop -> w h i l e \s RelationalExpression \s d o \s CompoundStatement \s e n d
+ReadStatement -> r e a d \s Identifier
+Printable -> ArithmeticExpression | RelationalExpression | Identifier | Constant
+PrintStatement -> p r i n t \s Printable
+StructDeclaration -> s t r u c t \s Identifier { Identifier : Type } | s t r u c t \s Identifier { Identifier : Type StructFieldSequence }
+StructFieldSequence -> , Identifier : Type | , Identifier : Type StructFieldSequence
+StructConstruction -> Identifier { Identifier Assignment } | Identifier { Identifier Assignment StructFieldAssignmentSequence }
+StructFieldAssignmentSequence -> , Identifier Assignment | , Identifier Assignment StructFieldAssignmentSequence
