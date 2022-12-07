@@ -1,13 +1,13 @@
 public class Production {
-    public String nonterminal;
-    public String end;
+    public String leftHandSide;
+    public String rightHandSide;
 
-    public Production(String nonterminal, String end) {
-        this.nonterminal = nonterminal;
-        this.end = end;
+    public Production(String leftHandSide, String rightHandSide) {
+        this.leftHandSide = leftHandSide;
+        this.rightHandSide = rightHandSide;
     }
     @Override
     public String toString(){
-        return nonterminal + " -> " + end;
+        return leftHandSide + " -> " + rightHandSide;
     }
 }
