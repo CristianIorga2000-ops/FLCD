@@ -22,16 +22,26 @@ public class Test {
     private static void test_first() {
         Map<String, Set<String>> first = testGrammar.computeFirst();
         assert first.equals(Map.of(
-                "S", Set.of("(", "a"),
-                "A", Set.of("+", ""),
-                "B", Set.of("(", "a"),
-                "C", Set.of("*", ""),
-                "D", Set.of("(", "a")
-                )
-        );
+            "S", Set.of("(", "a"),
+            "A", Set.of("+", ""),
+            "B", Set.of("(", "a"),
+            "C", Set.of("*", ""),
+            "D", Set.of("(", "a")
+        ));
+    }
+
+    public static void test_follow() {
+        Map<String, Set<String>> follow = testGrammar.computeFollow();
+        assert follow.equals(Map.of(
+                "S", Set.of("", ")"),
+                "A", Set.of("", ")"),
+                "B", Set.of("", "+", ")"),
+                "C", Set.of("+", "", ")"),
+                "D", Set.of("*", "+", "", ")")
+        ));
     }
 
     public static void main(String[] args) {
-
+        test_first();
     }
 }

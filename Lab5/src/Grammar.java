@@ -72,22 +72,25 @@ public class Grammar {
 
     public Map<String, Set<String>> computeFirst() {
         // TODO: Work in progress
-        boolean changed = true;
+        // Build a map from nonTerminals to their First (initially empty) set:
         Map<String, Set<String>> first = nonTerminals.stream().collect(
                 Collectors.toMap(nonTerminal -> nonTerminal, nonTerminal -> new HashSet<>()));
 
         Set<Production> nonTerminalProductions = new HashSet<>();
         for (Production production : productions) {
             String firstSymbol = production.rightHandSide.get(0);
-            if (firstSymbol.equals("") || nonTerminals.contains(firstSymbol)) {
-                first.get(production.leftHandSide).add(firstSymbol);
+            // If the first symbol on the right hand side is either epsilon or a terminal:
+            if (firstSymbol.equals("") || terminals.contains(firstSymbol)) {
+                first.get(production.leftHandSide).add(firstSymbol); // symbol added to First
             }
             else {
+                // save the productions that start with a non-terminal on the right hand side:
                 nonTerminalProductions.add(production);
             }
         }
 
-        while (changed) {
+        boolean changed = true;
+        while (changed) { // While there are still iterations to perform:
             changed = false;
             for (Production production : nonTerminalProductions) {
                 int currentIndex = 0;
