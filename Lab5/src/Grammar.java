@@ -70,6 +70,7 @@ public class Grammar {
         return productions.stream().filter(production -> Objects.equals(production.leftHandSide, nonTerminal)).collect(Collectors.toList());
     }
 
+    public Set<String> computeFirstForOne(String nonterminal){return  null;};
     public Map<String, Set<String>> computeFirst() {
         // TODO: Work in progress
         // Build a map from nonTerminals to their First (initially empty) set:
@@ -122,7 +123,40 @@ public class Grammar {
     }
 
     public Map<String, Set<String>> computeFollow() {
-        throw new UnsupportedOperationException();
+        Map<String, Set<String>> result = new HashMap<>();
+        for(String nonterminal : this.nonTerminals){
+            result.put(nonterminal, computeFollowForOne(nonterminal));
+        }
+        return result;
+    }
+
+    //Computing follow for one non-terminal
+    private Set<String> computeFollowForOne(String nonterminal){
+        Set<String> result = new HashSet<>();
+        //Search all productions
+        for (Production production : this.productions) {
+            //For a right hand side that contains that nonterminal
+            for (String rightSide : production.rightHandSide){
+                List<String> atoms = List.of(rightSide.split(" "));
+                //When such a right hand side is found
+                if (atoms.contains(nonterminal)){
+                    //For each atom after our non-terminal
+                    int index = atoms.indexOf(nonterminal);
+                    for (int i =index+1; i < atoms.size(); i ++){
+                        String atom = atoms.get(i);
+                        //If it is a non-terminal
+                        if (this.nonTerminals.contains(atom)){
+                            //Add FIRST of it to the set
+                            result.addAll(computeFirstForOne(atom));
+                        //If it is a terminal, simply add it
+                        } else {
+                            result.add(atom);
+                        }
+                    }
+                }
+            }
+        }
+        return result;
     }
 }
 
