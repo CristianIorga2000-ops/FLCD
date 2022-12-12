@@ -39,6 +39,8 @@ public class Main {
             System.out.println("2. Terminals");
             System.out.println("3. All productions");
             System.out.println("4. Productions for a given non-terminal");
+            System.out.println("69. First of all nonterminals");
+            System.out.println("21. Follow of all nonterminals");
             System.out.println("5. Exit");
 
             String command = scanner.nextLine();
@@ -60,6 +62,12 @@ public class Main {
                     break;
                 case "5":
                     return;
+                case "69":
+                    System.out.println(grammar.computeFirst());
+                    break;
+                case "21":
+                    System.out.println(grammar.computeFollow());
+                    break;
                 default:
                     System.out.println("Socheres prala ai gresit comanda");
                     break;

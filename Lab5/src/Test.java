@@ -21,6 +21,7 @@ public class Test {
 
     private static void test_first() {
         Map<String, Set<String>> first = testGrammar.computeFirst();
+        System.out.println(first);
         assert first.equals(Map.of(
             "S", Set.of("(", "a"),
             "A", Set.of("+", ""),
@@ -32,6 +33,7 @@ public class Test {
 
     public static void test_follow() {
         Map<String, Set<String>> follow = testGrammar.computeFollow();
+        System.out.println(follow);
         assert follow.equals(Map.of(
                 "S", Set.of("", ")"),
                 "A", Set.of("", ")"),
@@ -43,5 +45,6 @@ public class Test {
 
     public static void main(String[] args) {
         test_first();
+        test_follow();
     }
 }

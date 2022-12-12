@@ -11,29 +11,29 @@ public class Grammar {
 
 
     public Grammar(String filename) throws FileNotFoundException {
-        Scanner sc = new Scanner(new File(System.getProperty("user.dir") + "/Lab5/src/" + filename));
+        Scanner sc = new Scanner(new File(System.getProperty("user.dir") + "/src/" + filename));
         List<String> nonTerminals = Arrays.asList(sc.nextLine().split(" "));
         Set<String> terminals = Set.of(sc.nextLine().split(" "));
         String startingSymbol = sc.nextLine();
         List<String> productionsRows = new ArrayList<>();
-        while(sc.hasNextLine()) {
+        while (sc.hasNextLine()) {
             productionsRows.add(sc.nextLine());
         }
 
         List<Production> productions = new ArrayList<>();
-        for (String production : productionsRows){
+        for (String production : productionsRows) {
             // The following implementation does not detect \\ and \| so we do that tractorist style
             List<String> splitStr = Arrays.asList(production.split("->"));
             String nonTerminal = splitStr.get(0).trim().strip();
             List<String> ends = List.of(splitStr.get(1).split("\\|"));
-            if(production.contains("\\\\|")) {
+            if (production.contains("\\\\|")) {
                 productions.add(new Production(nonTerminal, List.of("|")));
             }
-            if(production.contains("\\\\")) {
+            if (production.contains("\\\\")) {
                 productions.add(new Production(nonTerminal, List.of("\\")));
             }
-            for(String end : ends){
-                productions.add(new Production(nonTerminal, List.of(end.replace('\\',' ').trim().strip())));
+            for (String end : ends) {
+                productions.add(new Production(nonTerminal, List.of(end.replace('\\', ' ').trim().strip())));
             }
         }
 
@@ -70,7 +70,6 @@ public class Grammar {
         return productions.stream().filter(production -> Objects.equals(production.leftHandSide, nonTerminal)).collect(Collectors.toList());
     }
 
-    public Set<String> computeFirstForOne(String nonterminal){return  null;};
     public Map<String, Set<String>> computeFirst() {
         // TODO: Work in progress
         // Build a map from nonTerminals to their First (initially empty) set:
@@ -83,8 +82,7 @@ public class Grammar {
             // If the first symbol on the right hand side is either epsilon or a terminal:
             if (firstSymbol.equals("") || terminals.contains(firstSymbol)) {
                 first.get(production.leftHandSide).add(firstSymbol); // symbol added to First
-            }
-            else {
+            } else {
                 // save the productions that start with a non-terminal on the right hand side:
                 nonTerminalProductions.add(production);
             }
@@ -96,21 +94,21 @@ public class Grammar {
             for (Production production : nonTerminalProductions) {
                 int currentIndex = 0;
                 Set<String> firstOfLeftHandSide = first.get(production.leftHandSide);
-                while(true) {
+                while (true) {
                     String firstSymbol = production.rightHandSide.get(currentIndex);
                     Set<String> firstOfFirstSymbol = first.get(firstSymbol);
 
                     if (firstOfFirstSymbol.contains("") && currentIndex + 1 < production.rightHandSide.size()) {
                         for (String symbol : firstOfFirstSymbol) {
                             if (!Objects.equals(symbol, "")) {
-                                if(firstOfLeftHandSide.add(symbol)) {
+                                if (firstOfLeftHandSide.add(symbol)) {
                                     changed = true;
                                 }
                             }
                         }
                         currentIndex++;
                     } else {
-                        if(firstOfLeftHandSide.addAll(firstOfFirstSymbol)) {
+                        if (firstOfLeftHandSide.addAll(firstOfFirstSymbol)) {
                             changed = true;
                         }
                         break;
@@ -124,34 +122,33 @@ public class Grammar {
 
     public Map<String, Set<String>> computeFollow() {
         Map<String, Set<String>> result = new HashMap<>();
-        for(String nonterminal : this.nonTerminals){
-            result.put(nonterminal, computeFollowForOne(nonterminal));
+        Map<String, Set<String>> firstResult = new HashMap<>();
+        for (String nonterminal : this.nonTerminals) {
+            result.put(nonterminal, computeFollowForOne(nonterminal, firstResult));
         }
         return result;
     }
 
     //Computing follow for one non-terminal
-    private Set<String> computeFollowForOne(String nonterminal){
+    private Set<String> computeFollowForOne(String nonterminal, Map<String, Set<String>> firstResult) {
         Set<String> result = new HashSet<>();
         //Search all productions
         for (Production production : this.productions) {
             //For a right hand side that contains that nonterminal
-            for (String rightSide : production.rightHandSide){
+            for (String rightSide : production.rightHandSide) {
                 List<String> atoms = List.of(rightSide.split(" "));
-                //When such a right hand side is found
-                if (atoms.contains(nonterminal)){
-                    //For each atom after our non-terminal
+                //When such a right hand side is found and our nonterminal is not the last element
+                if (atoms.contains(nonterminal) && (atoms.indexOf(nonterminal) < atoms.size() - 1)) {
+                    //Take the next atom
                     int index = atoms.indexOf(nonterminal);
-                    for (int i =index+1; i < atoms.size(); i ++){
-                        String atom = atoms.get(i);
-                        //If it is a non-terminal
-                        if (this.nonTerminals.contains(atom)){
-                            //Add FIRST of it to the set
-                            result.addAll(computeFirstForOne(atom));
+                    String atom = atoms.get(index + 1);
+                    //If it is a non-terminal
+                    if (this.nonTerminals.contains(atom)) {
+                        //Add FIRST of it to the set
+                        result.addAll(firstResult.get(atom));
                         //If it is a terminal, simply add it
-                        } else {
-                            result.add(atom);
-                        }
+                    } else {
+                        result.add(atom);
                     }
                 }
             }
