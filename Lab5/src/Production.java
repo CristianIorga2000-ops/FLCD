@@ -10,6 +10,6 @@ public class Production {
     }
     @Override
     public String toString(){
-        return leftHandSide + " -> " + rightHandSide.stream().reduce("", (x, y) -> x + y);
+        return leftHandSide + " -> " + rightHandSide;
     }
 }

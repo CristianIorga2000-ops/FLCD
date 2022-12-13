@@ -33,7 +33,7 @@ public class Grammar {
                 productions.add(new Production(nonTerminal, List.of("\\")));
             }
             for (String end : ends) {
-                productions.add(new Production(nonTerminal, List.of(end.replace('\\', ' ').trim().strip())));
+                productions.add(new Production(nonTerminal, List.of(end.trim().strip().split(" "))));
             }
         }
 
@@ -135,20 +135,19 @@ public class Grammar {
         //Search all productions
         for (Production production : this.productions) {
             //For a right hand side that contains that nonterminal
-            for (String rightSide : production.rightHandSide) {
-                List<String> atoms = List.of(rightSide.split(" "));
-                //When such a right hand side is found and our nonterminal is not the last element
-                if (atoms.contains(nonterminal) && (atoms.indexOf(nonterminal) < atoms.size() - 1)) {
-                    //Take the next atom
-                    int index = atoms.indexOf(nonterminal);
-                    String atom = atoms.get(index + 1);
+            //When such a right hand side is found
+            if (production.rightHandSide.contains(nonterminal)) {
+                int index = production.rightHandSide.indexOf(nonterminal);
+                //And our nonterminal is not the last element
+                if (index < production.rightHandSide.size() - 1) {
+                    String next = production.rightHandSide.get(index + 1);
                     //If it is a non-terminal
-                    if (this.nonTerminals.contains(atom)) {
+                    if (firstResult.containsKey(next)) {
                         //Add FIRST of it to the set
-                        result.addAll(firstResult.get(atom));
+                        result.addAll(firstResult.get(next));
                         //If it is a terminal, simply add it
                     } else {
-                        result.add(atom);
+                        result.add(next);
                     }
                 }
             }
