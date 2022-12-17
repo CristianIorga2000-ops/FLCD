@@ -18,29 +18,40 @@ public class Test {
                     new Production("D", List.of("a"))
             )
     );
+    private static final Grammar testGrammar2 = new Grammar(
+            List.of("E", "T"),
+            Set.of("+", "id", "const", "(", ")"),
+            "E",
+            List.of(
+                    new Production("E", List.of("E", "+", "T")),
+                    new Production("T", List.of("id")),
+                    new Production("T", List.of("const")),
+                    new Production("T", List.of("(", "E", ")"))
+            )
+    );
 
     private static void test_first() {
         Map<String, Set<String>> first = testGrammar.computeFirst();
-        System.out.println(first);
-        assert first.equals(Map.of(
+        System.out.println("First: " + first);
+        System.out.println("First is correct: " + first.equals(Map.of(
             "S", Set.of("(", "a"),
             "A", Set.of("+", ""),
             "B", Set.of("(", "a"),
             "C", Set.of("*", ""),
             "D", Set.of("(", "a")
-        ));
+        )));
     }
 
     public static void test_follow() {
         Map<String, Set<String>> follow = testGrammar.computeFollow();
-        System.out.println(follow);
-        assert follow.equals(Map.of(
+        System.out.println("Follow: " + follow);
+        System.out.println("Follow is correct: " + follow.equals(Map.of(
                 "S", Set.of("", ")"),
                 "A", Set.of("", ")"),
                 "B", Set.of("", "+", ")"),
                 "C", Set.of("+", "", ")"),
                 "D", Set.of("*", "+", "", ")")
-        ));
+        )));
     }
 
     public static void main(String[] args) {

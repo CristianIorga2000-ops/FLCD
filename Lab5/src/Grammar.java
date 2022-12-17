@@ -123,8 +123,8 @@ public class Grammar {
     public Map<String, Set<String>> computeFollow() {
         Map<String, Set<String>> result = new HashMap<>();
         Map<String, Set<String>> firstResult = new HashMap<>();
-        for (String nonterminal : this.nonTerminals) {
-            result.put(nonterminal, computeFollowForOne(nonterminal, firstResult));
+        for (String nonTerminal : this.nonTerminals) {
+            result.put(nonTerminal, computeFollowForOne(nonTerminal, firstResult));
         }
         return result;
     }
