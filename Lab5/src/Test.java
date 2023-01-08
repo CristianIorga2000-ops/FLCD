@@ -30,20 +30,22 @@ public class Test {
             )
     );
 
-    private static void test_first() {
-        Map<String, Set<String>> first = testGrammar.computeFirst();
+    private static void test() {
+        Map<String, Set<String>> first = testGrammar.getFirst();
         System.out.println("First: " + first);
         System.out.println("First is correct: " + first.equals(Map.of(
-            "S", Set.of("(", "a"),
-            "A", Set.of("+", ""),
-            "B", Set.of("(", "a"),
-            "C", Set.of("*", ""),
-            "D", Set.of("(", "a")
+                "S", Set.of("(", "a"),
+                "A", Set.of("+", ""),
+                "B", Set.of("(", "a"),
+                "C", Set.of("*", ""),
+                "D", Set.of("(", "a"),
+                "+", Set.of("+"),
+                "*", Set.of("*"),
+                "(", Set.of("("),
+                ")", Set.of(")"),
+                "a", Set.of("a")
         )));
-    }
-
-    public static void test_follow() {
-        Map<String, Set<String>> follow = testGrammar.computeFollow();
+        Map<String, Set<String>> follow = testGrammar.getFollow();
         System.out.println("Follow: " + follow);
         System.out.println("Follow is correct: " + follow.equals(Map.of(
                 "S", Set.of("", ")"),
@@ -55,7 +57,6 @@ public class Test {
     }
 
     public static void main(String[] args) {
-        test_first();
-        test_follow();
+        test();
     }
 }

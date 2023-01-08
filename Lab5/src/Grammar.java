@@ -8,7 +8,8 @@ public class Grammar {
     Set<String> terminals;
     String startingSymbol;
     List<Production> productions;
-
+    Map<String, Set<String>> first;
+    Map<String, Set<String>> follow;
 
     public Grammar(String filename) throws FileNotFoundException {
         Scanner sc = new Scanner(new File(System.getProperty("user.dir") + "/src/" + filename));
@@ -70,11 +71,40 @@ public class Grammar {
         return productions.stream().filter(production -> Objects.equals(production.leftHandSide, nonTerminal)).collect(Collectors.toList());
     }
 
-    public Map<String, Set<String>> computeFirst() {
-        // TODO: Work in progress
+    public Map<String, Set<String>> getFirst() {
+        if (first == null) {
+            first = computeFirst();
+        }
+        return first;
+    }
+
+    public Set<String> computeFirstOfSequence(List<String> sequence) {
+        Set<String> result = new HashSet<>();
+
+        if (sequence.isEmpty() || "".equals(sequence.get(0))) {
+            result.add("");
+            return result;
+        }
+
+        String firstSymbol = sequence.get(0);
+        if (terminals.contains(firstSymbol)) {
+            result.add(firstSymbol);
+            return result;
+        }
+
+        result.addAll(first.get(firstSymbol));
+        if (result.contains("") && sequence.size() > 1) {
+            result.remove("");
+            result.addAll(computeFirstOfSequence(sequence.subList(1, sequence.size())));
+        }
+        return result;
+    }
+
+    private Map<String, Set<String>> computeFirst() {
         // Build a map from nonTerminals to their First (initially empty) set:
         Map<String, Set<String>> first = nonTerminals.stream().collect(
                 Collectors.toMap(nonTerminal -> nonTerminal, nonTerminal -> new HashSet<>()));
+        first.putAll(terminals.stream().collect(Collectors.toMap(terminal -> terminal, Set::of)));
 
         Set<Production> nonTerminalProductions = new HashSet<>();
         for (Production production : productions) {
@@ -101,16 +131,12 @@ public class Grammar {
                     if (firstOfFirstSymbol.contains("") && currentIndex + 1 < production.rightHandSide.size()) {
                         for (String symbol : firstOfFirstSymbol) {
                             if (!Objects.equals(symbol, "")) {
-                                if (firstOfLeftHandSide.add(symbol)) {
-                                    changed = true;
-                                }
+                                changed = firstOfLeftHandSide.add(symbol) || changed;
                             }
                         }
                         currentIndex++;
                     } else {
-                        if (firstOfLeftHandSide.addAll(firstOfFirstSymbol)) {
-                            changed = true;
-                        }
+                        changed = firstOfLeftHandSide.addAll(firstOfFirstSymbol) || changed;
                         break;
                     }
                 }
@@ -120,39 +146,54 @@ public class Grammar {
         return first;
     }
 
-    public Map<String, Set<String>> computeFollow() {
-        Map<String, Set<String>> result = new HashMap<>();
-        Map<String, Set<String>> firstResult = new HashMap<>();
-        for (String nonTerminal : this.nonTerminals) {
-            result.put(nonTerminal, computeFollowForOne(nonTerminal, firstResult));
+    public Map<String, Set<String>> getFollow() {
+        if (follow == null) {
+            follow = computeFollow();
         }
-        return result;
+        return follow;
     }
 
-    //Computing follow for one non-terminal
-    private Set<String> computeFollowForOne(String nonterminal, Map<String, Set<String>> firstResult) {
-        Set<String> result = new HashSet<>();
-        //Search all productions
-        for (Production production : this.productions) {
-            //For a right hand side that contains that nonterminal
-            //When such a right hand side is found
-            if (production.rightHandSide.contains(nonterminal)) {
-                int index = production.rightHandSide.indexOf(nonterminal);
-                //And our nonterminal is not the last element
-                if (index < production.rightHandSide.size() - 1) {
-                    String next = production.rightHandSide.get(index + 1);
-                    //If it is a non-terminal
-                    if (firstResult.containsKey(next)) {
-                        //Add FIRST of it to the set
-                        result.addAll(firstResult.get(next));
-                        //If it is a terminal, simply add it
-                    } else {
-                        result.add(next);
+    private Map<String, Set<String>> computeFollow() {
+        Map<String, Set<String>> follow = nonTerminals.stream().collect(
+                Collectors.toMap(nonTerminal -> nonTerminal, nonTerminal -> new HashSet<>()));
+        follow.putAll(terminals.stream().collect(
+                Collectors.toMap(terminal -> terminal, nonTerminal -> new HashSet<>())));
+
+        follow.get(startingSymbol).add("");
+
+        boolean changed = true;
+        while(changed) {
+            changed = false;
+            for (Production production : productions) {
+                List<String> rightHandSide = production.rightHandSide;
+                String leftHandSide = production.leftHandSide;
+                for(int i = 0; i < rightHandSide.size(); i++) {
+                    String currentSymbol = rightHandSide.get(i);
+
+                    if ("".equals(currentSymbol)) {
+                        break;
                     }
+
+                    List<String> suffix = rightHandSide.subList(i + 1, rightHandSide.size());
+
+                    Set<String> firstOfWhatFollows = computeFirstOfSequence(suffix);
+
+                    if (firstOfWhatFollows.contains("")) {
+                        firstOfWhatFollows.remove("");
+                        changed = follow.get(currentSymbol).addAll(follow.get(leftHandSide)) || changed;
+                    }
+                    changed = follow.get(currentSymbol).addAll(firstOfWhatFollows) || changed;
                 }
             }
         }
-        return result;
+
+        terminals.forEach(follow::remove);
+        return follow;
     }
+
+//    private Map<String, Map<String, Integer>> computeParsingTable() {
+//
+//        nonTerminals.
+//    }
 }
 

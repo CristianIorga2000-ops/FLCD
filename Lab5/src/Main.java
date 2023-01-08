@@ -63,10 +63,10 @@ public class Main {
                 case "5":
                     return;
                 case "69":
-                    System.out.println(grammar.computeFirst());
+                    System.out.println(grammar.getFirst());
                     break;
                 case "21":
-                    System.out.println(grammar.computeFollow());
+                    System.out.println(grammar.getFollow());
                     break;
                 default:
                     System.out.println("Socheres prala ai gresit comanda");
