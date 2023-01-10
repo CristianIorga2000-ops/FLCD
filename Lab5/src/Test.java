@@ -54,6 +54,25 @@ public class Test {
                 "C", Set.of("+", "", ")"),
                 "D", Set.of("*", "+", "", ")")
         )));
+        ParsingTable parsingTable = new ParsingTable(testGrammar);
+        List<Production> productions = testGrammar.getProductions();
+
+        List<Boolean> matches = List.of(
+                productions.get(0).equals(parsingTable.get("S", "a")),
+                productions.get(0).equals(parsingTable.get("S", "(")),
+                productions.get(1).equals(parsingTable.get("A", "+")),
+                productions.get(2).equals(parsingTable.get("A", ")")),
+                productions.get(2).equals(parsingTable.get("A", "$")),
+                productions.get(3).equals(parsingTable.get("B", "a")),
+                productions.get(3).equals(parsingTable.get("B", "(")),
+                productions.get(5).equals(parsingTable.get("C", "+")),
+                productions.get(4).equals(parsingTable.get("C", "*")),
+                productions.get(5).equals(parsingTable.get("C", ")")),
+                productions.get(5).equals(parsingTable.get("C", "$")),
+                productions.get(7).equals(parsingTable.get("D", "a")),
+                productions.get(6).equals(parsingTable.get("D", "("))
+        );
+        System.out.println("Parsing table matches: " + matches);
     }
 
     public static void main(String[] args) {

@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.Objects;
 
 public class Production {
     public final String leftHandSide;
@@ -21,5 +22,18 @@ public class Production {
     @Override
     public String toString(){
         return leftHandSide + " -> " + rightHandSide;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Production that = (Production) o;
+        return index == that.index;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(index);
     }
 }

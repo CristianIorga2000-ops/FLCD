@@ -3,7 +3,7 @@ import java.util.*;
 public class ParsingTable {
     private final Map<String, Map<String, Production>> table;
 
-    public ParsingTable(Grammar grammar) {
+    public ParsingTable(Grammar grammar) throws IllegalArgumentException {
         table = new HashMap<>();
         for (String nonTerminal : grammar.getNonTerminals()) {
             table.put(nonTerminal, new HashMap<>());
@@ -17,21 +17,29 @@ public class ParsingTable {
             Set<String> firstOfRightHandSide = grammar.computeFirstOfSequence(production.rightHandSide);
             for (String terminal : firstOfRightHandSide) {
                 if (!terminal.isEmpty()) {
-                    row.put(terminal, production);
+                    addToTable(row, terminal, production);
                 } else {
+                    addToTable(row, "$", production);
                     for(String terminalAfter : grammar.getFollow().get(production.leftHandSide)) {
-                        row.put(terminalAfter, production);
+                        addToTable(row, terminalAfter, production);
                     }
                 }
             }
         }
     }
 
-    public Optional<Production> get(String nonTerminal, String terminal) {
+    public Production get(String nonTerminal, String terminal) {
         Map<String, Production> nonTerminalMap = table.get(nonTerminal);
         if (nonTerminalMap == null) {
-            return Optional.empty();
+            return null;
         }
-        return Optional.ofNullable(nonTerminalMap.get(terminal));
+        return nonTerminalMap.get(terminal);
+    }
+
+    private void addToTable(Map<String, Production> row, String key, Production production) {
+        if (row.containsKey(key)) {
+            throw new IllegalArgumentException("Grammar is not LL(1)");
+        }
+        row.put(key, production);
     }
 }
