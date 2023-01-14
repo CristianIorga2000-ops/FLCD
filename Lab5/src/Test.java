@@ -8,14 +8,14 @@ public class Test {
             Set.of("+", "*", "(", ")", "a"),
             "S",
             List.of(
-                    new Production("S", List.of("B", "A")),
-                    new Production("A", List.of("+", "B", "A")),
-                    new Production("A", List.of("")),
-                    new Production("B", List.of("D", "C")),
-                    new Production("C", List.of("*", "D", "C")),
-                    new Production("C", List.of("")),
-                    new Production("D", List.of("(", "S", ")")),
-                    new Production("D", List.of("a"))
+                    new Production("S", List.of("B", "A"), 1),
+                    new Production("A", List.of("+", "B", "A"), 2),
+                    new Production("A", List.of(""), 3),
+                    new Production("B", List.of("D", "C"), 4),
+                    new Production("C", List.of("*", "D", "C"), 5),
+                    new Production("C", List.of(""), 6),
+                    new Production("D", List.of("(", "S", ")"), 7),
+                    new Production("D", List.of("a"), 8)
             )
     );
     private static final Grammar testGrammar2 = new Grammar(
@@ -23,10 +23,10 @@ public class Test {
             Set.of("+", "id", "const", "(", ")"),
             "E",
             List.of(
-                    new Production("E", List.of("E", "+", "T")),
-                    new Production("T", List.of("id")),
-                    new Production("T", List.of("const")),
-                    new Production("T", List.of("(", "E", ")"))
+                    new Production("E", List.of("E", "+", "T"), 0),
+                    new Production("T", List.of("id"), 1),
+                    new Production("T", List.of("const"), 2),
+                    new Production("T", List.of("(", "E", ")"), 3)
             )
     );
 
@@ -73,6 +73,19 @@ public class Test {
                 productions.get(6).equals(parsingTable.get("D", "("))
         );
         System.out.println("Parsing table matches: " + matches);
+
+        System.out.println("Parsing succeeded: " + testGrammar.parseSequence(List.of("a", "*", "(", "a", "+", "a", ")"))
+                .equals(List.of(1, 4, 8, 5, 7, 1, 4, 8, 6, 2, 4, 8, 6, 3, 6, 3)));
+        try {
+            testGrammar.parseSequence(null);
+        } catch (IllegalArgumentException illegalArgumentException) {
+            System.out.println("Null parse sequence was caught successfully.");
+        }
+        try {
+            testGrammar.parseSequence(List.of("a", "*", "(", "a", "+", "a", ")", "(", ")"));
+        } catch (IllegalArgumentException illegalArgumentException) {
+            System.out.println("Incorrect parse sequence was caught successfully.");
+        }
     }
 
     public static void main(String[] args) {

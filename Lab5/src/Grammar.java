@@ -4,12 +4,15 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Grammar {
+    public static final String PARSING_ERROR_MESSAGE_TEMPLATE = "Error at position %d: %s";
     List<String> nonTerminals;
     Set<String> terminals;
     String startingSymbol;
     List<Production> productions;
     Map<String, Set<String>> first;
     Map<String, Set<String>> follow;
+
+    ParsingTable parsingTable;
 
     public Grammar(String filename) throws FileNotFoundException {
         Scanner sc = new Scanner(new File(System.getProperty("user.dir") + "/src/" + filename));
@@ -22,19 +25,21 @@ public class Grammar {
         }
 
         List<Production> productions = new ArrayList<>();
+        int productionIndex = 0;
         for (String production : productionsRows) {
             // The following implementation does not detect \\ and \| so we do that tractorist style
             List<String> splitStr = Arrays.asList(production.split("->"));
             String nonTerminal = splitStr.get(0).trim().strip();
             List<String> ends = List.of(splitStr.get(1).split("\\|"));
             if (production.contains("\\\\|")) {
-                productions.add(new Production(nonTerminal, List.of("|")));
+                productions.add(new Production(nonTerminal, List.of("|"), productionIndex++));
             }
             if (production.contains("\\\\")) {
-                productions.add(new Production(nonTerminal, List.of("\\")));
+                productions.add(new Production(nonTerminal, List.of("\\"), productionIndex++));
             }
             for (String end : ends) {
-                productions.add(new Production(nonTerminal, List.of(end.trim().strip().split(" "))));
+                productions.add(new Production(nonTerminal, List.of(end.trim().strip().split(" ")),
+                        productionIndex++));
             }
         }
 
@@ -59,16 +64,22 @@ public class Grammar {
         return terminals;
     }
 
-    public String getStartingSymbol() {
-        return startingSymbol;
-    }
-
     public List<Production> getProductions() {
         return productions;
     }
 
+    private void initializeParsingTableIfNotAlreadyInitialized() throws UnsupportedOperationException {
+        try {
+            if (parsingTable == null) {
+                parsingTable = new ParsingTable(this);
+            }
+        } catch (IllegalArgumentException illegalArgumentException) {
+            throw new UnsupportedOperationException(illegalArgumentException.getMessage());
+        }
+    }
+
     public List<Production> getProductionsForNonTerminal(String nonTerminal) {
-        return productions.stream().filter(production -> Objects.equals(production.leftHandSide, nonTerminal)).collect(Collectors.toList());
+        return productions.stream().filter(production -> Objects.equals(production.leftHandSide(), nonTerminal)).collect(Collectors.toList());
     }
 
     public Map<String, Set<String>> getFirst() {
@@ -100,6 +111,68 @@ public class Grammar {
         return result;
     }
 
+    /**
+     *
+     * @param w the sequence to be analyzed.
+     * @return the list of productions, in the order they need to be applied using left-most derivations
+     * @throws UnsupportedOperationException if the grammar is not LL(1)
+     * @throws IllegalArgumentException if the sequence is not accepted by the grammar
+     */
+    public List<Integer> parseSequence(List<String> w) throws UnsupportedOperationException, IllegalArgumentException {
+        if (w == null) {
+            throw new IllegalArgumentException("Input sequence cannot be null");
+        }
+
+        initializeParsingTableIfNotAlreadyInitialized();
+
+        int inputStackIndex = 0;
+        Stack<String> inputStack = new Stack<>();
+        inputStack.push("$");
+        for (int i = w.size() - 1; i >= 0; i--) {
+            inputStack.push(w.get(i));
+        }
+
+        Stack<String> workingStack = new Stack<>();
+        workingStack.push("$");
+        workingStack.push(startingSymbol);
+
+        List<Integer> output = new ArrayList<>();
+
+        while(true) {
+            String topOfWorkingStack = workingStack.pop();
+            if (nonTerminals.contains(topOfWorkingStack)) {
+                Production production = parsingTable.get(topOfWorkingStack, inputStack.peek());
+                if (production == null) {
+                    throw new IllegalArgumentException(
+                            String.format(PARSING_ERROR_MESSAGE_TEMPLATE, inputStackIndex, inputStack.peek()));
+                }
+
+                List<String> symbols = production.rightHandSide();
+                if (!symbols.get(0).equals("")) {
+                    for (int i = symbols.size() - 1; i >= 0; i--) {
+                        workingStack.push(symbols.get(i));
+                    }
+                }
+
+                output.add(production.index());
+            } else if (terminals.contains(topOfWorkingStack)) {
+                String topOfInputStack = inputStack.pop();
+                inputStackIndex++;
+
+                if (!Objects.equals(topOfWorkingStack, topOfInputStack)) {
+                    throw new IllegalArgumentException(
+                            String.format(PARSING_ERROR_MESSAGE_TEMPLATE, inputStackIndex, topOfInputStack));
+                }
+            } else {
+                if (!topOfWorkingStack.equals(inputStack.peek())) {
+                    throw new IllegalArgumentException(
+                            String.format(PARSING_ERROR_MESSAGE_TEMPLATE, inputStackIndex, inputStack.peek()));
+                }
+                return output;
+            }
+        }
+    }
+
     private Map<String, Set<String>> computeFirst() {
         // Build a map from nonTerminals to their First (initially empty) set:
         Map<String, Set<String>> first = nonTerminals.stream().collect(
@@ -108,10 +181,10 @@ public class Grammar {
 
         Set<Production> nonTerminalProductions = new HashSet<>();
         for (Production production : productions) {
-            String firstSymbol = production.rightHandSide.get(0);
+            String firstSymbol = production.rightHandSide().get(0);
             // If the first symbol on the right hand side is either epsilon or a terminal:
             if (firstSymbol.equals("") || terminals.contains(firstSymbol)) {
-                first.get(production.leftHandSide).add(firstSymbol); // symbol added to First
+                first.get(production.leftHandSide()).add(firstSymbol); // symbol added to First
             } else {
                 // save the productions that start with a non-terminal on the right hand side:
                 nonTerminalProductions.add(production);
@@ -123,12 +196,12 @@ public class Grammar {
             changed = false;
             for (Production production : nonTerminalProductions) {
                 int currentIndex = 0;
-                Set<String> firstOfLeftHandSide = first.get(production.leftHandSide);
+                Set<String> firstOfLeftHandSide = first.get(production.leftHandSide());
                 while (true) {
-                    String firstSymbol = production.rightHandSide.get(currentIndex);
+                    String firstSymbol = production.rightHandSide().get(currentIndex);
                     Set<String> firstOfFirstSymbol = first.get(firstSymbol);
 
-                    if (firstOfFirstSymbol.contains("") && currentIndex + 1 < production.rightHandSide.size()) {
+                    if (firstOfFirstSymbol.contains("") && currentIndex + 1 < production.rightHandSide().size()) {
                         for (String symbol : firstOfFirstSymbol) {
                             if (!Objects.equals(symbol, "")) {
                                 changed = firstOfLeftHandSide.add(symbol) || changed;
@@ -165,8 +238,8 @@ public class Grammar {
         while(changed) {
             changed = false;
             for (Production production : productions) {
-                List<String> rightHandSide = production.rightHandSide;
-                String leftHandSide = production.leftHandSide;
+                List<String> rightHandSide = production.rightHandSide();
+                String leftHandSide = production.leftHandSide();
                 for(int i = 0; i < rightHandSide.size(); i++) {
                     String currentSymbol = rightHandSide.get(i);
 
@@ -190,10 +263,5 @@ public class Grammar {
         terminals.forEach(follow::remove);
         return follow;
     }
-
-//    private Map<String, Map<String, Integer>> computeParsingTable() {
-//
-//        nonTerminals.
-//    }
 }
 

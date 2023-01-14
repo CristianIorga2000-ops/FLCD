@@ -1,27 +1,13 @@
 import java.util.List;
 import java.util.Objects;
 
-public class Production {
-    public final String leftHandSide;
-    public final List<String> rightHandSide;
-    private int index;
-
-    public Production(String leftHandSide, List<String> rightHandSide) {
-        this.leftHandSide = leftHandSide;
-        this.rightHandSide = rightHandSide;
-    }
-
-    public int getIndex() {
-        return index;
-    }
-
-    public void setIndex(int index) {
-        this.index = index;
-    }
+public record Production(String leftHandSide, List<String> rightHandSide, int index) {
 
     @Override
-    public String toString(){
-        return leftHandSide + " -> " + rightHandSide;
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder(leftHandSide).append(" -> ");
+        rightHandSide.forEach(stringBuilder::append);
+        return stringBuilder.toString();
     }
 
     @Override
