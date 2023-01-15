@@ -1,6 +1,8 @@
-S A B
-x y
+A B C D S
++ = * ( ) a
 S
-S -> A | A x | B y
-A -> x
-B -> x y A | B y
+S -> B A
+A -> + B A | ε
+B -> D C
+C -> * D C | ε
+D -> ( S ) | a

@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Grammar {
     public static final String PARSING_ERROR_MESSAGE_TEMPLATE = "Error at position %d: %s";
@@ -38,7 +39,12 @@ public class Grammar {
                 productions.add(new Production(nonTerminal, List.of("\\"), productionIndex++));
             }
             for (String end : ends) {
-                productions.add(new Production(nonTerminal, List.of(end.trim().strip().split(" ")),
+                productions.add(
+                        new Production(
+                                nonTerminal,
+                                Stream.of(
+                                        end.trim().strip().split(" ")
+                                ).map(c -> Objects.equals(c, "ε") ? "" : c ).collect(Collectors.toList()),
                         productionIndex++));
             }
         }
@@ -102,7 +108,7 @@ public class Grammar {
             result.add(firstSymbol);
             return result;
         }
-
+        if(first == null) this.getFirst();
         result.addAll(first.get(firstSymbol));
         if (result.contains("") && sequence.size() > 1) {
             result.remove("");

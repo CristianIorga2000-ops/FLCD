@@ -1,6 +1,4 @@
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Test {
     private static final Grammar testGrammar = new Grammar(
@@ -72,7 +70,6 @@ public class Test {
                 productions.get(7).equals(parsingTable.get("D", "a")),
                 productions.get(6).equals(parsingTable.get("D", "("))
         );
-        System.out.println("Parsing table matches: " + matches);
 
         System.out.println("Parsing succeeded: " + testGrammar.parseSequence(List.of("a", "*", "(", "a", "+", "a", ")"))
                 .equals(List.of(1, 4, 8, 5, 7, 1, 4, 8, 6, 2, 4, 8, 6, 3, 6, 3)));
@@ -86,9 +83,17 @@ public class Test {
         } catch (IllegalArgumentException illegalArgumentException) {
             System.out.println("Incorrect parse sequence was caught successfully.");
         }
+
+        System.out.println("PARSING OUTPUT FORMATTING TESTING");
+        List<Integer> parseResult = testGrammar.parseSequence(List.of("a", "*", "(", "a", "+", "a", ")"));
+        List<ParseOutput.Node> result = ParseOutput.formatOutputTable(productions, parseResult);
+        System.out.println(result);
     }
+
 
     public static void main(String[] args) {
         test();
+        List<String> strings = List.of("a|b|c| ".split("\\|"));
+        System.out.println(strings);
     }
 }
