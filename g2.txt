@@ -1,4 +1,4 @@
-Program CompoundStatement Statement UserDefinedType Type ArraySpecification OptionalAssignment Assignment AssignedValue VarDeclaration InitSequence StructField AssignmentStatement PlusOrMinus ArithmeticExpression MultiplyOrDivide Factor Term RelationalSign RelationalExpression ConstInitialization ConstDeclaration ConstInitializationSequence OptionalElse Conditional ElifSequence Loop ReadStatement Printable PrintStatement StructDeclaration StructFieldDeclarationSequence StructConstruction StructFieldConstructionSequence
+Program CompoundStatement Statement UserDefinedType Type ArraySpecification OptionalAssignment Assignment AssignedValue VarDeclaration InitSequence StructField AssignmentStatement PlusOrMinus ArithmeticExpression OptionalArithmeticExpression MultiplyOrDivide Factor Term RelationalSign RelationalExpression ConstInitialization ConstDeclaration ConstInitializationSequence OptionalElse Conditional ElifSequence Loop ReadStatement Printable PrintStatement StructDeclaration StructFieldDeclarationSequence StructConstruction StructFieldConstructionSequence
 int char bool array [ ] = var , . let + - * / ( ) < <= == != >= > true false const else if then end elif while do read print struct { } : identifier constant
 Program
 Program -> CompoundStatement
@@ -15,7 +15,8 @@ InitSequence -> | InitSequence , identifier OptionalAssignment
 StructField -> StructField . identifier | identifier . identifier
 AssignmentStatement -> let identifier Assignment
 PlusOrMinus -> + | -
-ArithmeticExpression -> ArithmeticExpression PlusOrMinus Term | Term
+ArithmeticExpression -> OptionalArithmeticExpression Term | Term
+OptionalArithmeticExpression -> | ArithmeticExpression PlusOrMinus
 MultiplyOrDivide -> * | /
 Factor -> ( ArithmeticExpression ) | identifier | constant
 Term -> Factor | Term MultiplyOrDivide Factor
