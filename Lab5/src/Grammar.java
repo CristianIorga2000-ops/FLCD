@@ -16,7 +16,7 @@ public class Grammar {
     ParsingTable parsingTable;
 
     public Grammar(String filename) throws FileNotFoundException {
-        Scanner sc = new Scanner(new File(System.getProperty("user.dir") + "/src/" + filename));
+        Scanner sc = new Scanner(new File(filename));
         List<String> nonTerminals = Arrays.asList(sc.nextLine().split(" "));
         Set<String> terminals = Set.of(sc.nextLine().split(" "));
         String startingSymbol = sc.nextLine();
@@ -190,6 +190,9 @@ public class Grammar {
             String firstSymbol = production.rightHandSide().get(0);
             // If the first symbol on the right hand side is either epsilon or a terminal:
             if (firstSymbol.equals("") || terminals.contains(firstSymbol)) {
+                if (first.get(production.leftHandSide()) == null) {
+                    System.out.println("Here");
+                }
                 first.get(production.leftHandSide()).add(firstSymbol); // symbol added to First
             } else {
                 // save the productions that start with a non-terminal on the right hand side:

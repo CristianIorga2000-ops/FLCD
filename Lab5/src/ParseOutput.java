@@ -65,7 +65,7 @@ public class ParseOutput {
         table.add(new Node(rootName, 0, 0));
 
         for (Integer productionId : parserOutput) {
-            Production production = productions.get(productionId);
+            Production production = productions.get(productionId - 1);
             String parentName = production.leftHandSide();
             int parentId = table.getNodeId(parentName);
 

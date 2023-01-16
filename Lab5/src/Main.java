@@ -86,7 +86,7 @@ public class Main {
         String inputFilename = scanner.nextLine();
         StringBuilder fileContent = new StringBuilder();
         try {
-            File myObj = new File(System.getProperty("user.dir") + "/src/" + inputFilename);
+            File myObj = new File(inputFilename);
             Scanner myReader = new Scanner(myObj);
             while (myReader.hasNextLine()) {
                 fileContent.append(myReader.nextLine());

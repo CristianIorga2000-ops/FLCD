@@ -1,0 +1,37 @@
+Program CompoundStatement Statement UserDefinedType Type ArraySpecification OptionalAssignment Assignment AssignedValue VarDeclaration InitSequence StructField AssignmentStatement PlusOrMinus ArithmeticExpression MultiplyOrDivide Factor Term RelationalSign RelationalExpression ConstInitialization ConstDeclaration ConstInitializationSequence OptionalElse Conditional ElifSequence Loop ReadStatement Printable PrintStatement StructDeclaration StructFieldDeclarationSequence StructConstruction StructFieldConstructionSequence
+int char bool array [ ] = var , . let + - * / ( ) < <= == != >= > true false const else if then end elif while do read print struct { } : identifier constant
+Program
+Program -> CompoundStatement
+CompoundStatement -> | CompoundStatement Statement
+Statement -> ConstDeclaration | VarDeclaration | StructDeclaration | AssignmentStatement | Conditional | Loop | ReadStatement | PrintStatement
+UserDefinedType -> identifier
+Type -> int | char | bool | UserDefinedType | array [ Type ]
+ArraySpecification -> Type [ constant ]
+OptionalAssignment -> | Assignment
+Assignment -> = AssignedValue
+AssignedValue -> ArithmeticExpression | constant | RelationalExpression | ArraySpecification | StructConstruction | StructField
+VarDeclaration -> var Type identifier OptionalAssignment InitSequence
+InitSequence -> | InitSequence , identifier OptionalAssignment
+StructField -> StructField . identifier | identifier . identifier
+AssignmentStatement -> let identifier Assignment
+PlusOrMinus -> + | -
+ArithmeticExpression -> ArithmeticExpression PlusOrMinus Term | Term
+MultiplyOrDivide -> * | /
+Factor -> ( ArithmeticExpression ) | identifier | constant
+Term -> Factor | Term MultiplyOrDivide Factor
+RelationalSign -> < | <= | == | != | >= | >
+RelationalExpression -> ArithmeticExpression RelationalSign ArithmeticExpression | true | false
+ConstInitialization -> identifier = constant
+ConstDeclaration -> const ConstInitialization ConstInitializationSequence
+ConstInitializationSequence -> | ConstInitializationSequence , ConstInitialization
+OptionalElse -> | else CompoundStatement
+Conditional -> if RelationalExpression then CompoundStatement ElifSequence OptionalElse end
+ElifSequence -> | ElifSequence elif RelationalExpression then CompoundStatement
+Loop -> while RelationalExpression do CompoundStatement end
+ReadStatement -> read identifier
+Printable -> ArithmeticExpression | RelationalExpression | identifier | constant
+PrintStatement -> print Printable
+StructDeclaration -> struct UserDefinedType { identifier : Type , StructFieldDeclarationSequence }
+StructFieldDeclarationSequence -> | StructFieldDeclarationSequence , identifier : Type
+StructConstruction -> UserDefinedType { identifier Assignment StructFieldConstructionSequence }
+StructFieldConstructionSequence -> | , identifier Assignment 
